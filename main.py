@@ -14,45 +14,50 @@ class ScriptaApp:
         self.root = root
         self.root.title("Scripta - OCR Transcription Helper")
         self.root.geometry("500x800")
+        root.configure(bg="#202225")
 
         # Label to show instructions
         self.label = tk.Label(root, text="Press Ctrl+V to paste an image from clipboard")
+        self.label.configure(bg="#202225", foreground="white")
         self.label.pack(pady=20)
         
         # Canvas to display the pasted image
-        self.canvas = tk.Canvas(root, width=450, height=300, bg="gray")
+        self.canvas = tk.Canvas(root, width=450, height=300, bg="#111111")
         self.canvas.pack(pady=10)
 
 
         #label for confidence level key
         key_frame = tk.Frame(self.root, relief=tk.RIDGE, borderwidth=2, 
-                            bg="lightgray")
+                            bg="lightgrey")
         key_frame.pack(pady=5, padx=10, fill=tk.X)
         
         tk.Label(key_frame, text="Confidence Key:", 
-                font=("Arial", 10, "bold"), bg="lightgray").pack(side=tk.LEFT, padx=10)
+                font=("Arial", 10, "bold"), bg="lightgrey").pack(side=tk.LEFT, padx=10)
         
         tk.Label(key_frame, text="● High (≥95%)", 
-                foreground="green", bg="lightgray", 
+                foreground="#2C7A7B", bg="lightgrey", 
                 font=("Arial", 10)).pack(side=tk.LEFT, padx=5)
         
         tk.Label(key_frame, text="● Medium (85-94%)", 
-                foreground="orange", bg="lightgray", 
+                foreground="#B7791F", bg="lightgrey", 
                 font=("Arial", 10)).pack(side=tk.LEFT, padx=5)
         
         tk.Label(key_frame, text="● Low (<85%)", 
-                foreground="red", bg="lightgray", 
+                foreground="#B91C1C", bg="lightgrey", 
                 font=("Arial", 10)).pack(side=tk.LEFT, padx=5)
         
-        # Create Text widget
-        self.text = tk.Text(root, wrap='word', undo=True, width=60, height=20)
+        # Text widget for results & editing
+        self.text = tk.Text(root, wrap='word', undo=True, width=60, height=20, selectbackground="#6C63FF")
         self.text.pack(padx=10, pady=10)
 
-        # Configure tags for confidence colors
-        self.text.tag_configure("high", foreground="green")
-        self.text.tag_configure("medium", foreground="orange")
-        self.text.tag_configure("low", foreground="red")
+        # Text tags for confidence levels
+        self.text.tag_configure("high", foreground="#2C7A7B")
+        self.text.tag_configure("medium", foreground="#B7791F")
+        self.text.tag_configure("low", foreground="#B91C1C")
 
+        # Button to copy text widget's content to clipboard
+        self.copy_button = tk.Button(root, text="Copy to Clipboard", command=self.copy_to_clipboard)
+        self.copy_button.pack(pady=(5, 10))
 
         # Bind Ctrl+V
         self.root.bind('<Control-v>', self.paste_image)
@@ -121,6 +126,13 @@ class ScriptaApp:
             self.text.tag_add(tag, start_idx, end_idx)
 
             word_index += 1
+
+    def copy_to_clipboard(self):
+        content = self.text.get("1.0", tk.END).strip()
+        self.root.clipboard_clear()
+        self.root.clipboard_append(content)
+        self.root.update()
+        self.label.config(text="Text copied to clipboard!")
 
 
 def get_ocr_from_image(image: Image.Image, api_key: str):

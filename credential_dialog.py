@@ -6,7 +6,7 @@ class CredentialDialog:
         self.result = None  
         
         self.dialog = tk.Toplevel(parent)
-        self.dialog.title("Enter API Key")
+        self.dialog.title("Scripta - Enter API Key")
         self.dialog.geometry("400x150")
         
         # Make modal
