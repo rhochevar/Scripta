@@ -1,4 +1,6 @@
 import io
+import os
+import json
 import string
 import tkinter as tk
 from credential_dialog import CredentialDialog
@@ -11,10 +13,16 @@ class ScriptaApp:
     api_key: str
 
     def __init__(self, root: tk.Tk):
+        self.config_file = "config.json"
         self.root = root
         self.root.title("Scripta - OCR Transcription Helper")
-        self.root.geometry("500x800")
+        self.root.geometry("500x850")
+        self.root.resizable(False,False)
         root.configure(bg="#202225")
+
+        # Button to enter the Google Cloud Vision API key
+        self.api_key_button = tk.Button(root, text="Configure API Key", command=self.configure_api_key)
+        self.api_key_button.pack(anchor=tk.NE, padx=0, pady=5)
 
         # Label to show instructions
         self.label = tk.Label(root, text="Press Ctrl+V to paste an image from clipboard")
@@ -47,7 +55,7 @@ class ScriptaApp:
                 font=("Arial", 10)).pack(side=tk.LEFT, padx=5)
         
         # Text widget for results & editing
-        self.text = tk.Text(root, wrap='word', undo=True, width=60, height=20, selectbackground="#6C63FF")
+        self.text = tk.Text(root, wrap='word', undo=True, width=60, height=20, selectbackground="black")
         self.text.pack(padx=10, pady=10)
 
         # Text tags for confidence levels
@@ -62,9 +70,29 @@ class ScriptaApp:
         # Bind Ctrl+V
         self.root.bind('<Control-v>', self.paste_image)
 
-        # Get the user's API key from a dialog box
-        dialog = CredentialDialog(root)
-        self.api_key = dialog.show()
+        self.load_config()
+
+    def load_config(self):
+        """Load API key from file"""
+        try:
+            if os.path.exists(self.config_file):
+                with open(self.config_file, 'r') as f:
+                    config = json.load(f)
+                    self.api_key = config.get('api_key')
+                    if self.api_key:
+                        print("API key loaded from config")
+                    else:
+                        print("No API key found in config")
+            else:
+                print("No config file found")
+        except Exception as e:
+            print(e)
+
+    def configure_api_key(self):
+        dialog = CredentialDialog(self.root)
+        new_api_key = dialog.show()
+        self.api_key = new_api_key
+        
 
     def paste_image(self, event=None):
         try:
