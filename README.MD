@@ -35,5 +35,5 @@ Windows executable available [in the releases section](https://github.com/rhoche
 git clone https://github.com/rhochevar/Scripta  
 cd Scripta  
 pip3 install -r requirements.txt  
-python3 scripta.py  
+python3 main.py  
 ```
