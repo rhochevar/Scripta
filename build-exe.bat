@@ -1,0 +1,1 @@
+pyinstaller --onefile --windowed --icon=Scripta.ico --name=Scripta main.py
